@@ -22,7 +22,7 @@ server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 server.bind(server_config)
 server.listen(1)
 
-init()
+init(convert=True)
 
 print(f"{Fore.GREEN}Servidor iniciado en {server_config[0]}:{server_config[1]}, esperando conexiones..")
 

@@ -9,9 +9,10 @@ from colorama import init, Fore, Back, Style
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from utils.index import generate_random_port
+from utils.index import get_machine_ip
 
 server_config = (
-  socket.gethostname(),
+  get_machine_ip(),
   generate_random_port()
 )
 

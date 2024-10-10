@@ -22,7 +22,7 @@ server.listen(1)
 
 init()
 
-print(f"{Fore.GREEN}Servidor iniciao en {server_config[0]}, esperando conexiones..")
+print(f"{Fore.GREEN}Servidor iniciado en {server_config[0]}:{server_config[1]}, esperando conexiones..")
 
 clients = []
 stop_server = False

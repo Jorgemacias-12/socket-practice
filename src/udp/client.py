@@ -1,7 +1,7 @@
 import threading
 import socket
 import sys
-import os 
+import os
 
 from colorama import init, Fore, Style, Back
 
@@ -10,14 +10,26 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils.index import validate_ip
 from utils.index import validate_port
 
-init(convert=True)
-
 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
 username = None
 server_addr = None
 server_port = None
+lock = threading.Lock()
+socket_open = True
+
+init()
+
+def close_socket():
+  global socket_open
+  with lock:
+    if socket_open:
+      socket_open = False
+      client.close()
 
 def handle_messages():
+  global client, socket_open
+  
   try:
     while True:
       message = input(f"{Fore.CYAN}> {Style.RESET_ALL}")
@@ -25,28 +37,27 @@ def handle_messages():
       if message == "":
         continue
       
-      message = f"{Fore.YELLOW}[{username}] {Style.RESET_ALL}{message}" 
+      message = f"{Fore.YELLOW}[{username}] {Style.RESET_ALL}{message}".encode()
       
-      client.sendto(message.encode(), (server_addr, server_port))
-  except KeyboardInterrupt:
-    print(f"\n{Fore.RED}Saliendo... {Style.RESET_ALL}")
+      with lock:
+        if socket_open:
+          client.sendto(message, (server_addr, server_port))
+  except Exception as e:
+    print(f"\n{Fore.RED}Error al recibir el mensaje: {e}{Style.RESET_ALL}")
+    close_socket()
     
-    client.sendto(f'{username} se ha desconectado del servidor'.encode(), (server_addr, server_port))
-    client.close()
-    
-    sys.exit()
-
 def handle_recieve_messages():
+  global client, socket_open
+  
   try:
     while True:
-      data, address = client.recvfrom(1024)
+      data, addr = client.recvfrom(4096)
       
       if data:
-        print(data.decode())   
-
-  except Exception as e: 
-    print(e)
-
+        print(data.decode())
+  except Exception as e:
+    print(f"\n{Fore.RED}Error al recibir respuesta desde el servidor, error detallado: {e}{Style.RESET_ALL}")
+    
 def main():
   global server_addr, server_port, username
   
@@ -84,8 +95,5 @@ def main():
   messages_thread.start()
   recieve_thread.start()  
   
-  messages_thread.join()
-  recieve_thread.join()
-      
 if __name__ == "__main__":
   main()

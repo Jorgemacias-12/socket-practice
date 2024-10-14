@@ -51,10 +51,14 @@ def accept_connections():
                     
                     response = convert_to_table(files)
                                 
-                    server.sendto(f"\n{response}".encode(), address)
+                    server.sendto(f"\n{Fore.LIGHTBLUE_EX}{response}{Style.RESET_ALL}".encode(), address)
                     print(f"{Fore.LIGHTMAGENTA_EX}Respuesta enviada a {address}{Style.RESET_ALL}")
+                    server.sendto(f"\n{Fore.YELLOW}Si deseas descargar algún archivo, utiliza el comando get, y el índice del archivo que deseas descargar.{Style.RESET_ALL}\n".encode(), address)
                 except Exception as e:
                     print(e)
+                    
+            if "get" in decoded_message:
+                print("Enviar archivo al cliente")
                     
         except OSError as e:
             if not stop_server:

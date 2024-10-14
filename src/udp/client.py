@@ -22,7 +22,10 @@ def recieve_messages():
     while True:
         try:
             data, server = client.recvfrom(1024)
+                        
             print(f"{data.decode()}")
+        except socket.timeout:
+            pass 
         except Exception as e:
             print(f"\n{Fore.RED}{e}{Style.RESET_ALL}")
 
@@ -40,7 +43,7 @@ def main():
             break
         else:
             print(f"{Fore.RED}Dirección IP no válida. Intente de nuevo.{
-                  Style.RESET_ALL}")
+                Style.RESET_ALL}")
 
     while True:
         server_port = input(
@@ -51,18 +54,18 @@ def main():
             break
         else:
             print(f"{Fore.RED}Puerto no válido. Debe ser un número entre 1 y 65535.{
-                  Style.RESET_ALL}")
+                Style.RESET_ALL}")
 
     while True:
         username = input(f"{Fore.CYAN}Ingrese su nombre de usuario: {
-                         Style.RESET_ALL}")
+                        Style.RESET_ALL}")
 
         if username != "":
             break
         else:
             print(f"{Fore.RED}Por favor, eliga un nombre de usuario para continuar. {
-                  Style.RESET_ALL}")
-
+                Style.RESET_ALL}")
+    
     recieve_thread = threading.Thread(target=recieve_messages)
     recieve_thread.daemon = True
     recieve_thread.start()
@@ -74,6 +77,7 @@ def main():
             if message == "":
                 continue
             if "exit" in message:
+                print(f"{Fore.RED}Finalizando sesión como {username}, cerrando cliente...{Style.RESET_ALL}")
                 break
             
             message = f"{Fore.YELLOW}[{username}] {Style.RESET_ALL}{message}"
@@ -81,8 +85,6 @@ def main():
             client.sendto(message.encode(), (server_addr, server_port))
     except KeyboardInterrupt:
         print(f"{Fore.RED}Finalizando sesión como {username}, cerrando cliente...{Style.RESET_ALL}")
-    finally:
-        client.close()
 
 if __name__ == "__main__":
     main()

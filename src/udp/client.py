@@ -64,8 +64,7 @@ def main():
         if validate_ip(server_addr):
             break
         else:
-            print(f"{Fore.RED}Dirección IP no válida. Intente de nuevo.{
-                Style.RESET_ALL}")
+            print(f"{Fore.RED}Dirección IP no válida. Intente de nuevo.{Style.RESET_ALL}\n")
 
     while True:
         server_port = input(
@@ -75,18 +74,15 @@ def main():
             server_port = int(server_port)
             break
         else:
-            print(f"{Fore.RED}Puerto no válido. Debe ser un número entre 1 y 65535.{
-                Style.RESET_ALL}")
+            print(f"{Fore.RED}Puerto no válido. Debe ser un número entre 1 y 65535.{Style.RESET_ALL}")
 
     while True:
-        username = input(f"{Fore.CYAN}Ingrese su nombre de usuario: {
-                        Style.RESET_ALL}")
+        username = input(f"{Fore.CYAN}Ingrese su nombre de usuario: {Style.RESET_ALL}")
 
         if username != "":
             break
         else:
-            print(f"{Fore.RED}Por favor, eliga un nombre de usuario para continuar. {
-                Style.RESET_ALL}")
+            print(f"{Fore.RED}Por favor, eliga un nombre de usuario para continuar.{Style.RESET_ALL}")
     
     recieve_thread = threading.Thread(target=recieve_messages)
     recieve_thread.daemon = True

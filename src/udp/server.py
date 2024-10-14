@@ -1,15 +1,13 @@
-from utils.index import list_folder_contents
-from utils.index import get_machine_ip
-from utils.index import generate_random_port
 import threading
 import socket
 import sys
 import os
 
-from colorama import init, Fore, Style, Back
+from colorama import init, Fore, Style
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from utils.index import get_machine_ip
 
 server_config = (
     get_machine_ip(),
@@ -17,22 +15,18 @@ server_config = (
 )
 
 server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
 server.bind(server_config)
 
 init(convert=True)
 
-print(f"{Fore.GREEN}Servidor iniciado en {server_config[0]}:{
-      server_config[1]}, esperando conexiones..")
+print(f"{Fore.GREEN}Servidor iniciado en {server_config[0]}:{server_config[1]}, esperando conexiones..{Style.RESET_ALL}")
 
 connections = []
 stop_server = False
 available_commands = ["list", "get"]
 
-
 def accept_connections():
     global stop_server
-    global available_commands
     global server
 
     while not stop_server:
@@ -51,33 +45,18 @@ def accept_connections():
                 print("Si")
                 try:
                     response = "test".encode()
-
                     server.sendto(response, address)
                 except Exception as e:
                     print(e)
-
-            # for command in available_commands:
-            #   if command == "list" and command in decoded_message:
-            #     try:
-            #       files = list_folder_contents()
-
-            #       print(files)
-
-            #       if not files:
-            #         server.sendto("Hola mundo".encode(), address)
-            #     except Exception as e:
-            #       print(e)
-
-        except KeyboardInterrupt:
-            stop_server = True
-            server.close()
-            print(f"{Fore.RED}\nCerrando servidor...{Style.RESET_ALL}")
+                    
+        except OSError as e:
+            if not stop_server:
+                print(f"{Fore.RED}\nError de socket: {e}{Style.RESET_ALL}")
+            break
         except Exception as e:
-            stop_server = True
-            server.close()
-            print(f"{Fore.RED}\nCerrando servidor con código de error {
-                  e}{Style.RESET_ALL}")
-
+            if not stop_server:
+                print(f"{Fore.RED}\nError inesperado: {e}{Style.RESET_ALL}")
+            break
 
 def main():
     global stop_server
@@ -90,12 +69,9 @@ def main():
             pass
     except KeyboardInterrupt:
         stop_server = True
-
         print(f"{Fore.RED}\nCerrando servidor...{Style.RESET_ALL}")
-
         server.close()
         connections_thread.join()
-
 
 if __name__ == "__main__":
     main()

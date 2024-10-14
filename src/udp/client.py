@@ -8,8 +8,9 @@ from colorama import init, Fore, Style
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from utils.index import validate_port
+from utils.index import get_downloads_folder, get_file_name, validate_port
 from utils.index import validate_ip
+from utils.index import create_download_folder
 
 TIMEOUT = 5
 
@@ -22,8 +23,27 @@ def recieve_messages():
     while True:
         try:
             data, server = client.recvfrom(1024)
+            data = data.decode()
                         
-            print(f"{data.decode()}")
+            if "Sending file" in data:
+                client.sendto(b"ready", server)  
+            
+            if "filename" in data:
+                file_name = get_file_name(data)
+                file_path = os.path.join(get_downloads_folder(), file_name)
+                
+                with open(file_path, 'wb') as file:
+                    while True:
+                        data, _ = client.recvfrom(1024)
+                                                
+                        if "finish" in data.decode('utf-8', errors='ignore'):
+                            print(f"\n{Fore.GREEN}Archivo recibido\n{Style.RESET_ALL}")
+                            break
+                        
+                        file.write(data)            
+            if not "Sending file" in data:
+                print(f"{data}")
+           
         except socket.timeout:
             pass 
         except Exception as e:
@@ -31,6 +51,8 @@ def recieve_messages():
 
 def main():
     global server_addr, server_port, username
+
+    create_download_folder()
 
     while True:
         server_addr = input(

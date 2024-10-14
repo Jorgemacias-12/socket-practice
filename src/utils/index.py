@@ -2,6 +2,7 @@ import random
 import socket
 import psutil
 import os
+import re
 
 from tabulate import tabulate
 
@@ -68,6 +69,17 @@ def list_folder_contents():
   
   return file_details
 
+def create_download_folder():
+  user_docs = os.path.join(os.environ['USERPROFILE'], 'Documents')
+  
+  folder_name = "udp_downloads"
+  
+  folder_path = os.path.join(user_docs, folder_name)
+  
+  if not os.path.exists(folder_path):
+    os.makedirs(folder_path)
+  
+
 def convert_to_table(data):
   
   data = [[index] + row for index, row in enumerate(data)]
@@ -77,3 +89,17 @@ def convert_to_table(data):
   table = tabulate(data, headers, tablefmt="grid")
   
   return table
+
+def get_file_full_path(file_name):
+  return os.path.join(os.path.join(os.environ['USERPROFILE'], 'Documents'), 'udp_documents', file_name)
+
+def get_downloads_folder():
+  return os.path.join(os.path.join(os.environ['USERPROFILE'], 'Documents'), 'udp_downloads')
+
+def get_file_name(string):
+  pattern = r'\[(.+?)\]'
+  
+  match = re.search(pattern, string)
+  
+  if match:
+    return match.group(1)

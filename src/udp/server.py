@@ -7,7 +7,7 @@ from colorama import init, Fore, Style
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from utils.index import get_machine_ip
+from utils.index import get_machine_ip, list_folder_contents
 
 server_config = (
     get_machine_ip(),
@@ -44,8 +44,14 @@ def accept_connections():
             if "list" in decoded_message:
                 print("Si")
                 try:
-                    response = "test".encode()
-                    server.sendto(response, address)
+                    files = list_folder_contents()
+
+                    if not files:
+                        server.sendto(f"{Fore.YELLOW}No hay ningún archivo que mostrar".encode(), address)
+                        print(f"{Fore.LIGHTMAGENTA_EX}Respuesta enviaa a {address}{Style.RESET_ALL}")
+                        
+                    server.sendto(str(files).encode(), address)
+                    print(f"{Fore.LIGHTMAGENTA_EX}Respuesta enviaa a {address}{Style.RESET_ALL}")
                 except Exception as e:
                     print(e)
                     

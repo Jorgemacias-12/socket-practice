@@ -70,7 +70,9 @@ def list_folder_contents():
 
 def convert_to_table(data):
   
-  headers = ["Filename", "Size"]
+  data = [[index] + row for index, row in enumerate(data)]
+  
+  headers = ["Index","Filename", "Size"]
   
   table = tabulate(data, headers, tablefmt="grid")
   

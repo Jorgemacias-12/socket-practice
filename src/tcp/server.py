@@ -53,11 +53,10 @@ def handle_connections(connection, address):
       
       print(f"{Fore.WHITE} {data.decode()}")
      
-      for client, addr in clients:
-        if isCommand: continue
-        
-        if addr != address:
-          client.sendall(data) 
+      if not isCommand:
+        for client, addr in clients:
+          if addr != address:
+            client.sendall(data)
   except ConnectionResetError:
     pass
   finally:

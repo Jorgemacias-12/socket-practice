@@ -13,7 +13,7 @@ from utils.index import get_machine_ip
 
 server_config = (
   get_machine_ip(),
-  generate_random_port()
+  5000
 )
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -52,12 +52,12 @@ def handle_connections(connection, address):
         break
       
       print(f"{Fore.WHITE} {data.decode()}")
-      
+     
       for client, addr in clients:
-        if data.decode() == "get date": break
-        if data.decode() == "get participants": break
-        if addr != address and not isCommand:
-          client.sendall(data)
+        if isCommand: continue
+        
+        if addr != address:
+          client.sendall(data) 
   except ConnectionResetError:
     pass
   finally:
